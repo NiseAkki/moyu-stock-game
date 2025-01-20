@@ -3,6 +3,8 @@ import http from 'http';
 import { Server } from 'socket.io';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { User } from './models/user.js';
+import { GameConfig } from '../config/gameConfig.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,39 +56,93 @@ let gameState = {
 io.on('connection', (socket) => {
     console.log('玩家连接:', socket.id);
 
+    // 处理游戏结束
+    socket.on('gameEnd', async (data) => {
+        try {
+            // 更新用户总资产
+            const user = await User.findOne({ where: { name: data.playerName } });
+            if (user) {
+                user.totalAssets += data.finalAssets;
+                user.currentGameAssets = 0;
+                user.stocks = [];
+                await user.save();
+
+                // 通知客户端游戏结束
+                socket.emit('gameEnd', data.finalAssets);
+            }
+        } catch (error) {
+            console.error('游戏结束处理错误:', error);
+        }
+    });
+
     // 处理玩家加入
-    socket.on('playerJoin', (playerData) => {
-        players.set(socket.id, {
-            id: socket.id,
-            name: playerData.playerName,
-            totalAssets: playerData.totalAssets,
-            currentGameAssets: playerData.currentGameAssets,
-            stocks: playerData.playerStocks || []
-        });
-        
-        // 广播玩家列表更新
-        io.emit('playersUpdate', Array.from(players.values()));
+    socket.on('playerJoin', async (playerData) => {
+        try {
+            let [user] = await User.findOrCreate({
+                where: { name: playerData.playerName },
+                defaults: {
+                    totalAssets: GameConfig.INITIAL_TOTAL_ASSETS,
+                    currentGameAssets: 0,
+                    stocks: []
+                }
+            });
+
+            // 检查玩家是否已在游戏中
+            const inGame = user.currentGameAssets > 0;
+
+            players.set(socket.id, {
+                id: socket.id,
+                name: user.name,
+                totalAssets: user.totalAssets,
+                currentGameAssets: user.currentGameAssets,
+                stocks: user.stocks,
+                inGame: inGame
+            });
+
+            // 发送玩家状态
+            socket.emit('playerState', {
+                inGame: inGame,
+                currentGameAssets: user.currentGameAssets,
+                stocks: user.stocks
+            });
+
+            io.emit('playersUpdate', Array.from(players.values()));
+        } catch (error) {
+            console.error('玩家加入错误:', error);
+        }
     });
 
     // 处理股票交易
-    socket.on('stockTransaction', (data) => {
-        const player = players.get(socket.id);
-        if (player) {
-            // 更新玩家数据
-            player.currentGameAssets = data.currentGameAssets;
-            player.stocks = data.playerStocks;
-            
-            // 广播交易信息
-            io.emit('transactionUpdate', {
-                playerId: socket.id,
-                playerName: player.name,
-                stockName: data.stockName,
-                type: data.type, // 'buy' 或 'sell'
-                price: data.price
-            });
-            
-            // 更新玩家列表
-            io.emit('playersUpdate', Array.from(players.values()));
+    socket.on('stockTransaction', async (data) => {
+        try {
+            const player = players.get(socket.id);
+            if (player) {
+                // 更新内存中的玩家数据
+                player.currentGameAssets = data.currentGameAssets;
+                player.stocks = data.playerStocks;
+
+                // 更新数据库
+                await User.update({
+                    currentGameAssets: data.currentGameAssets,
+                    stocks: data.playerStocks
+                }, {
+                    where: { name: player.name }
+                });
+
+                // 广播交易信息
+                io.emit('transactionUpdate', {
+                    playerId: socket.id,
+                    playerName: player.name,
+                    stockName: data.stockName,
+                    type: data.type,
+                    price: data.price
+                });
+
+                // 更新玩家列表
+                io.emit('playersUpdate', Array.from(players.values()));
+            }
+        } catch (error) {
+            console.error('交易更新错误:', error);
         }
     });
 

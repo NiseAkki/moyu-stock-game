@@ -8,9 +8,8 @@ export default class GameScene extends Phaser.Scene {
         this.setupSocketListeners();
         this.playerName = '';
         this.totalAssets = GameConfig.INITIAL_TOTAL_ASSETS; // 使用配置中的初始总资产
-        this.playerAvatar = GameConfig.DEFAULT_AVATAR; // 使用配置中的默认头像
         this.currentGameAssets = 0; // 当前对局中的资产
-        this.roundEndTime = 0; // 当前回合结束时间（基于本地时间）
+        this.inGame = false; // 新增：标记玩家是否在对局中
         this.playerStocks = []; // 玩家持仓
         this.playerFunctionCards = []; // 玩家持有的功能卡
     }
@@ -26,6 +25,11 @@ export default class GameScene extends Phaser.Scene {
 
         this.socket.on('newRound', (gameState) => {
             this.handleNewRound(gameState);
+        });
+
+        // 添加游戏结束监听器
+        this.socket.on('gameEnd', (finalAssets) => {
+            this.handleGameEnd(finalAssets);
         });
     }
 
@@ -86,12 +90,26 @@ export default class GameScene extends Phaser.Scene {
     createMainInterface() {
         this.add.text(20, 20, `昵称: ${this.playerName}`, { fontSize: '20px', fill: '#fff' }).setDepth(1);
         this.add.text(20, 50, `总资产: $${this.totalAssets}`, { fontSize: '20px', fill: '#fff' }).setDepth(1);
-        const startButton = this.add.text(20, 100, '1. 开始炒股', { fontSize: '24px', fill: '#fff' })
-            .setInteractive()
-            .setDepth(1)
-            .on('pointerdown', () => {
+        this.startButton = this.add.text(400, 500, this.inGame ? '回到游戏' : '开始炒股', {
+            fontSize: '32px',
+            fill: '#fff'
+        }).setInteractive();
+        this.startButton.on('pointerdown', () => {
+            if (!this.inGame) {
+                // 首次进入游戏
+                if (this.totalAssets >= GameConfig.MAX_GAME_ASSETS) {
+                    this.totalAssets -= GameConfig.MAX_GAME_ASSETS;
+                    this.currentGameAssets = GameConfig.MAX_GAME_ASSETS;
+                    this.inGame = true;
+                    this.startStockGame();
+                } else {
+                    alert('总资产不足，无法参与游戏！');
+                }
+            } else {
+                // 返回游戏
                 this.startStockGame();
-            });
+            }
+        });
         this.add.image(500, 200, 'default_avatar').setScale(0.5).setDepth(1);
         // 每回合获得一张功能卡
         this.addFunctionCardToPlayer();
@@ -169,5 +187,19 @@ export default class GameScene extends Phaser.Scene {
             roundEndTime: this.roundEndTime,
             socket: this.socket
         });
+    }
+
+    handleGameEnd(finalAssets) {
+        // 强制退出对局
+        this.inGame = false;
+        this.totalAssets += finalAssets;
+        this.currentGameAssets = 0;
+        this.playerStocks = [];
+        this.playerFunctionCards = [];
+        
+        // 返回主界面
+        this.scene.start('GameScene');
+        
+        alert(`本局游戏结束！\n最终资产：${finalAssets}\n已返回总资产`);
     }
 }

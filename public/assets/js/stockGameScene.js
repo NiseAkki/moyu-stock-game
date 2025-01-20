@@ -229,29 +229,18 @@ export default class StockGameScene extends Phaser.Scene {
     }
 
     endGame() {
-        // 调试信息：输出对局结束的时间和原因
-        console.log(`对局结束时间: ${new Date().toLocaleString()}`);
-        console.log(`对局结束原因: 手动触发`);
+        // 计算所有持仓的价值
+        const stocksValue = this.playerStocks.reduce((total, stock) => {
+            return total + stock.price;
+        }, 0);
 
-        // 对局结束时，将当前资产加回总资产
-        this.totalAssets += this.playerAssets;
+        // 计算最终资产（现金 + 持仓价值）
+        const finalAssets = this.playerAssets + stocksValue;
 
-        // 自动发放1000代币
-        this.totalAssets += 1000;
-
-        // 调试信息：输出当前资产和总资产
-        console.log(`当前资产: $${this.playerAssets}`);
-        console.log(`总资产: $${this.totalAssets}`);
-
-        // 关闭功能卡弹窗
-        closeFunctionCardPanel();
-
-        // 返回主界面
-        this.scene.start('GameScene', {
-            totalAssets: this.totalAssets, // 更新后的总资产
-            currentGameAssets: 0, // 当前资产清零
+        // 通知服务器游戏结束
+        this.socket.emit('gameEnd', {
             playerName: this.playerName,
-            hasPaidInitialFee: false // 重置初始费用支付状态
+            finalAssets: finalAssets
         });
     }
 
@@ -550,6 +539,13 @@ export default class StockGameScene extends Phaser.Scene {
         this.time.delayedCall(3000, () => {
             messageText.destroy();
         });
+    }
+
+    update() {
+        // 检查是否到达游戏结束时间
+        if (Date.now() >= GameConfig.GAME_END_TIME) {
+            this.endGame();
+        }
     }
 }
 
