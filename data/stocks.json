@@ -1,0 +1,73 @@
+[
+    {
+      "id": "stock_1",
+      "name": "东大谋台",
+      "minPrice": 30,
+      "maxPrice": 150,
+      "icon": "stock_1.png"
+    },
+    {
+      "id": "stock_2",
+      "name": "赛礼诗",
+      "minPrice": 30,
+      "maxPrice": 150,
+      "icon": "stock_2.png"
+    },
+    {
+      "id": "stock_3",
+      "name": "东大银行",
+      "minPrice": 30,
+      "maxPrice": 150,
+      "icon": "stock_3.png"
+    },
+    {
+        "id": "stock_4",
+        "name": "围巾企鹅",
+        "minPrice": 30,
+        "maxPrice": 150,
+        "icon": "stock_3.png"
+      },
+    {
+        "id": "stock_5",
+        "name": "芝麻开门",
+        "minPrice": 30,
+        "maxPrice": 150,
+        "icon": "stock_3.png"
+      },
+    {
+        "id": "stock_6",
+        "name": "数字跳动",
+        "minPrice": 30,
+        "maxPrice": 150,
+        "icon": "stock_3.png"
+      },
+    {
+        "id": "stock_7",
+        "name": "碧样德",
+        "minPrice": 30,
+        "maxPrice": 150,
+        "icon": "stock_3.png"
+      },
+    {
+        "id": "stock_8",
+        "name": "千度",
+        "minPrice": 30,
+        "maxPrice": 150,
+        "icon": "stock_3.png"
+      },
+    {
+        "id": "stock_9",
+        "name": "陆空威视",
+        "minPrice": 30,
+        "maxPrice": 150,
+        "icon": "stock_3.png"
+      },
+      {
+        "id": "stock_10",
+        "name": "英伟大",
+        "minPrice": 30,
+        "maxPrice": 150,
+        "icon": "stock_3.png"
+      }
+
+  ]

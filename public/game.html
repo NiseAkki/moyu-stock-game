@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摸鱼炒股 - 游戏</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .game-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .stock-list, .player-list {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 45%;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        button {
+            padding: 5px 10px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .player-info {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>摸鱼炒股</h1>
+    <div class="game-container">
+        <div class="stock-list">
+            <h2>股票列表</h2>
+            <ul id="stock-list"></ul>
+        </div>
+        <div class="player-list">
+            <h2>玩家列表</h2>
+            <ul id="player-list"></ul>
+        </div>
+    </div>
+    <div class="player-info">
+        <h2>我的信息</h2>
+        <p id="player-assets">资产: $0</p>
+        <p id="player-stocks">持仓: 无</p>
+        <button id="start-game-button">开始炒股</button>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/assets/js/game.js"></script>
+</body>
+</html>

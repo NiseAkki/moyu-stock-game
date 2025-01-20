@@ -1,0 +1,32 @@
+[
+    {
+      "id": "card_up",
+      "name": "给我涨！",
+      "effect": "指定一支股票，使其在下回合涨1%-10%。",
+      "icon": "card_up.png"
+    },
+    {
+      "id": "card_down",
+      "name": "给我跌！",
+      "effect": "指定一支股票，使其在下回合跌1%-10%。",
+      "icon": "card_down.png"
+    },
+    {
+      "id": "card_freeze",
+      "name": "冻结股价",
+      "effect": "指定一支股票，使其在下回合股价不可改变（最高优先级）。",
+      "icon": "card_freeze.png"
+    },
+    {
+      "id": "card_peek",
+      "name": "窥视持股",
+      "effect": "指定一名玩家，可以看他的持仓情况。",
+      "icon": "card_peek.png"
+    },
+    {
+      "id": "card_swap",
+      "name": "换我玩玩",
+      "effect": "指定一名玩家，可以把自己所有的功能卡和对方的功能卡调换。",
+      "icon": "card_swap.png"
+    }
+  ]

@@ -1,0 +1,22 @@
+{
+  "name": "moyu-stock-game",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/server/app.js",
+  "scripts": {
+    "start": "node src/server/app.js",
+    "build": "echo 'No build step needed'"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.2",
+    "phaser": "^3.87.0",
+    "socket.io": "^4.8.1"
+  }
+}

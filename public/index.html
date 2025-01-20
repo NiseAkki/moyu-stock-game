@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摸鱼炒股</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.87.0/dist/phaser.min.js"></script>
+    <style>
+        /* 功能卡侧边栏样式 */
+        #function-card-panel {
+            position: absolute;
+            top: 0;
+            right: -300px; /* 初始隐藏在屏幕右侧 */
+            width: 300px;
+            height: 100%;
+            background-color: #333;
+            color: #fff;
+            transition: right 0.3s ease;
+            z-index: 1000;
+        }
+        #function-card-panel.visible {
+            right: 0; /* 显示侧边栏 */
+        }
+        #function-card-panel .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            background-color: #f00;
+            color: #fff;
+            padding: 5px 10px;
+        }
+        #function-card-panel .card-list {
+            padding: 20px;
+        }
+        #function-card-panel .card-item {
+            margin-bottom: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        #function-card-panel .card-item button {
+            margin-left: 10px;
+            background-color: #0f0;
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    <!-- 功能卡侧边栏 -->
+    <div id="function-card-panel">
+        <div class="close-button" onclick="toggleFunctionCardPanel()">×</div>
+        <div class="card-list" id="card-list">
+            <!-- 功能卡列表将动态生成 -->
+        </div>
+    </div>
+    <script type="module" src="assets/js/main.js"></script>
+</body>
+</html>
