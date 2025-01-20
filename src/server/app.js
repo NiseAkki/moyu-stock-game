@@ -9,7 +9,38 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: "*",  // 在生产环境中应该设置为具体的域名
+        methods: ["GET", "POST"]
+    }
+});
+
+// 静态文件服务
+app.use(express.static(path.join(__dirname, '../../public')));
+
+// 根路由处理
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../public/index.html'));
+});
+
+// 添加错误处理中间件
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
+// 处理 404
+app.use((req, res) => {
+    console.log('404 请求:', req.url);
+    res.status(404).sendFile(path.join(__dirname, '../../public/index.html'));
+});
+
+// 暴露 /src/shared 目录（用于加载 config.js）
+app.use('/shared', express.static(path.join(__dirname, '../shared')));
+
+// 暴露 /assets 目录（用于加载股票图片等资源）
+app.use('/assets', express.static(path.join(__dirname, '../../public/assets')));
 
 // 存储所有在线玩家的信息
 const players = new Map();
@@ -18,15 +49,6 @@ let gameState = {
     stocks: [],
     roundEndTime: 0
 };
-
-// 暴露 /public 目录
-app.use(express.static(path.join(__dirname, '../../public')));
-
-// 暴露 /src/shared 目录（用于加载 config.js）
-app.use('/shared', express.static(path.join(__dirname, '../shared')));
-
-// 暴露 /assets 目录（用于加载股票图片等资源）
-app.use('/assets', express.static(path.join(__dirname, '../../public/assets')));
 
 // WebSocket 连接逻辑
 io.on('connection', (socket) => {
@@ -84,6 +106,6 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, '0.0.0.0', () => {
-    console.log(`服务器运行在 http://localhost:${PORT}`);
+server.listen(PORT, () => {
+    console.log(`服务器运行在端口 ${PORT}`);
 });
